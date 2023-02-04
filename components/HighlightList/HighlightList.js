@@ -19,16 +19,8 @@ const HighlightList = () => {
     getMyHighlights();
   }, []);
 
-  const createHighlight = () => {
-    axios.post(`${baseUrl}/highlights`, { text: "hi", page: 1, location: 2, highlighted_at: 'Fri, 06 Jan 2023 22:44:35.143300000 UTC +00:00' }).then((response) => {
-      console.log(response)
-    }).catch((error) => {
-      console.log(error)
-    })
-  };
-
   return (
-    <ScrollView>
+    <ScrollView style={{ width: '100%' }}>
       {highlights.map((highlight) => <HighlightListItem key={highlight['id']} text={highlight['text']} page={highlight['page']} location={highlight['location']} highlightedAt={highlight['highlighted_at']} bookId={highlight['book_id']} />)}
     </ScrollView>
   );

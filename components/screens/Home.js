@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { View } from 'react-native';
+import { IconButton } from 'react-native-paper';
 import HighlightList from '../HighlightList/HighlightList';
 
 const Home = () => {

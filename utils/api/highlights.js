@@ -13,3 +13,16 @@ export const myHighlights = () => {
     });
   })
 };
+
+export const newHighlight = (params) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(`${baseUrl}/highlights`, params).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};
