@@ -1,27 +1,42 @@
-import axios from "axios";
 import { useEffect, useState } from 'react';
 import { myHighlights } from "../../utils/api/highlights";
-import { baseUrl } from "../../utils/constants";
 import HighlightListItem from "./HighlightListItem";
-import { ScrollView } from "react-native";
+import { RefreshControl, ScrollView } from "react-native";
 
 const HighlightList = () => {
   const [highlights, setHighlights] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    const getMyHighlights = async () => {
-      try {
-        const response = await myHighlights();
-        setHighlights(response);
-      } catch (error) {
-      }
-    };
     getMyHighlights();
   }, []);
 
+  const getMyHighlights = async () => {
+    setRefreshing(true);
+    try {
+      const response = await myHighlights();
+      setHighlights(response);
+    } catch (error) {
+    }
+    setRefreshing(false);
+  };
+
   return (
-    <ScrollView style={{ width: '100%' }}>
-      {highlights.map((highlight) => <HighlightListItem key={highlight['id']} text={highlight['text']} page={highlight['page']} location={highlight['location']} highlightedAt={highlight['highlighted_at']} bookId={highlight['book_id']} />)}
+    <ScrollView
+      style={{ width: '100%' }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getMyHighlights} />}
+    >
+      {highlights.map((highlight) => (
+        <HighlightListItem
+          key={highlight['id']}
+          id={highlight['id']}
+          text={highlight['text']}
+          page={highlight['page']}
+          location={highlight['location']}
+          highlightedAt={highlight['highlighted_at']}
+          bookId={highlight['book_id']}
+        />
+      ))}
     </ScrollView>
   );
 };

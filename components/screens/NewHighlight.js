@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { newHighlight } from "../../utils/api/highlights";
 

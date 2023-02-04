@@ -26,3 +26,16 @@ export const newHighlight = (params) => {
       });
   })
 };
+
+export const deleteHighlight = (id) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(`${baseUrl}/highlights/${id}`).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};
