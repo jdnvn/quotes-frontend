@@ -7,6 +7,17 @@ import BookList from '../BookList/BookList';
 import { FloatingAction } from "react-native-floating-action";
 import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 
+const segmentedButtons = [
+  {
+    value: 'highlight',
+    label: 'Highlights',
+  },
+  {
+    value: 'book',
+    label: 'Books',
+  },
+];
+
 const Home = ({ navigation }) => {
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
@@ -15,6 +26,23 @@ const Home = ({ navigation }) => {
   const [highlights, setHighlights] = useState([]);
   const [books, setBooks] = useState([]);
   const theme = useTheme();
+
+  const floatingButtonActions = [
+    {
+      text: "Book",
+      icon: <AntDesign name="book" size={24} color="white" />,
+      name: "New Book",
+      color: theme.colors.secondary,
+      position: 2
+    },
+    {
+      text: "Highlight",
+      icon: <FontAwesome5 name="highlighter" size={20} color="white" />,
+      name: "New Highlight",
+      color: theme.colors.secondary,
+      position: 1
+    }
+  ];
 
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -36,16 +64,7 @@ const Home = ({ navigation }) => {
       <SegmentedButtons
         value={selected}
         onValueChange={setSelected}
-        buttons={[
-          {
-            value: 'highlight',
-            label: 'Highlights',
-          },
-          {
-            value: 'book',
-            label: 'Books',
-          },
-        ]}
+        buttons={segmentedButtons}
         style={{ marginVertical: 10 }}
       />
       {selected === "highlight" ? (
@@ -54,21 +73,7 @@ const Home = ({ navigation }) => {
         <BookList books={books} setBooks={setBooks} />
       )}
       <FloatingAction
-        actions={[{
-          text: "Book",
-          icon: <AntDesign name="book" size={24} color="white" />,
-          name: "New Book",
-          textBackground: "black",
-          color: theme.colors.secondary,
-          position: 2
-        },
-        {
-          text: "Highlight",
-          icon: <FontAwesome5 name="highlighter" size={24} color="white" />,
-          name: "New Highlight",
-          color: theme.colors.secondary,
-          position: 1
-        }]}
+        actions={floatingButtonActions}
         onPressItem={name => navigation.navigate(name)}
         color={theme.colors.primary}
         shadow={{
