@@ -39,3 +39,16 @@ export const deleteHighlight = (id) => {
       });
   })
 };
+
+export const readHighlightFromImage = (params) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(`${baseUrl}/highlights/ocr`, params).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};

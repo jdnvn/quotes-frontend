@@ -3,12 +3,11 @@ import { myHighlights } from "../../utils/api/highlights";
 import HighlightListItem from "./HighlightListItem";
 import { RefreshControl, ScrollView } from "react-native";
 
-const HighlightList = () => {
-  const [highlights, setHighlights] = useState([]);
+const HighlightList = ({ highlights, setHighlights }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getMyHighlights();
+    if (!highlights.length) getMyHighlights();
   }, []);
 
   const getMyHighlights = async () => {
@@ -23,19 +22,19 @@ const HighlightList = () => {
 
   return (
     <ScrollView
-      style={{ width: '100%' }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getMyHighlights} />}
+      style={{ width: "100%" }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={getMyHighlights}
+          tintColor={"slateblue"}
+          title={"getting yo quotes..."}
+          titleColor={"mediumpurple"}
+        />
+      }
     >
       {highlights.map((highlight) => (
-        <HighlightListItem
-          key={highlight['id']}
-          id={highlight['id']}
-          text={highlight['text']}
-          page={highlight['page']}
-          location={highlight['location']}
-          highlightedAt={highlight['highlighted_at']}
-          bookId={highlight['book_id']}
-        />
+        <HighlightListItem key={highlight.id} {...highlight} />
       ))}
     </ScrollView>
   );

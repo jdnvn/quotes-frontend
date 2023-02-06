@@ -1,7 +1,11 @@
-import { Avatar, Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
 import { deleteHighlight } from '../../utils/api/highlights';
+import { useNavigation } from '@react-navigation/native';
 
-const HighlightListItem = ({ id, text, page, location, highlightedAt, bookId }) => {
+const HighlightListItem = (props) => {
+  const { id, text, page, location, highlightedAt, book } = props;
+  const navigation = useNavigation();
+
   const handleDeleteHighlight = async () => {
     try {
       await deleteHighlight(id);
@@ -11,8 +15,11 @@ const HighlightListItem = ({ id, text, page, location, highlightedAt, bookId }) 
   };
 
   return (
-    <Card>
-      <Card.Title title={text} subtitle={bookId} />
+    <Card
+      onPress={() => navigation.navigate("Highlight", props)}
+      style={{ padding: 10, marginTop: 2 }}
+    >
+      <Card.Title title={text} subtitle={book?.title} />
       {/* <Card.Content>
         <Text variant="titleLarge">Card title</Text>
         <Text variant="bodyMedium">Card content</Text>
