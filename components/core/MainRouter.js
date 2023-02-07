@@ -6,6 +6,7 @@ import { useTheme, IconButton } from "react-native-paper";
 import Highlight from "../screens/Highlight";
 import { MaterialIcons } from '@expo/vector-icons';
 import NewBook from "../screens/NewBook";
+import Book from "../screens/Book";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ const MainRouter = () => {
         <Stack.Screen name="New Highlight" component={NewHighlight} />
         <Stack.Screen name="Highlight" component={Highlight} />
         <Stack.Screen name="New Book" component={NewBook} />
+        <Stack.Screen name="Book" component={Book} />
       </Stack.Navigator>
     </NavigationContainer>
   )

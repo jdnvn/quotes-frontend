@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import HighlightList from '../HighlightList/HighlightList';
 import * as Notifications from 'expo-notifications';
-import { SegmentedButtons, useTheme } from 'react-native-paper';
+import { FAB, SegmentedButtons } from 'react-native-paper';
 import BookList from '../BookList/BookList';
-import { FloatingAction } from "react-native-floating-action";
-import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 
 const segmentedButtons = [
   {
@@ -25,23 +23,19 @@ const Home = ({ navigation }) => {
   const [selected, setSelected] = useState("highlight");
   const [highlights, setHighlights] = useState([]);
   const [books, setBooks] = useState([]);
-  const theme = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const floatingButtonActions = [
     {
-      text: "Book",
-      icon: <AntDesign name="book" size={24} color="white" />,
-      name: "New Book",
-      color: theme.colors.secondary,
-      position: 2
+      icon: "book",
+      label: "Book",
+      onPress: () => navigation.navigate("New Book"),
     },
     {
-      text: "Highlight",
-      icon: <FontAwesome5 name="highlighter" size={20} color="white" />,
-      name: "New Highlight",
-      color: theme.colors.secondary,
-      position: 1
-    }
+      icon: "marker",
+      label: "Highlight",
+      onPress: () => navigation.navigate("New Highlight"),
+    },
   ];
 
   useEffect(() => {
@@ -72,14 +66,13 @@ const Home = ({ navigation }) => {
       ) : (
         <BookList books={books} setBooks={setBooks} />
       )}
-      <FloatingAction
+      <FAB.Group
+        open={menuOpen}
+        visible
+        icon={menuOpen ? 'close' : 'plus'}
         actions={floatingButtonActions}
-        onPressItem={name => navigation.navigate(name)}
-        color={theme.colors.primary}
-        shadow={{
-          shadowOpacity: 0,
-          shadowColor: "#FF4B4B"
-        }}
+        onStateChange={({open}) => setMenuOpen(open)}
+        onPress={() => setMenuOpen(!menuOpen)}
       />
     </View>
   )

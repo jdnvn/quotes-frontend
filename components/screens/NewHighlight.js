@@ -106,20 +106,24 @@ const NewHighlight = () => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ padding: 15 }}>
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={64}>
-        <TextInput
-          label="Highlight"
-          value={text}
-          multiline
-          onChangeText={text => setText(text)}
-        />
-        <Menu
-          visible={imageMenuVisible}
-          onDismiss={() => setImageMenuVisible(false)}
-          anchor={<IconButton onPress={() => setImageMenuVisible(true)} icon="camera" size={20} />}
-        >
-          <Menu.Item title="Take picture" onPress={openCamera} />
-          <Menu.Item title="Select from library" onPress={pickImage} />
-        </Menu>
+        <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+          <TextInput
+            label="Highlight"
+            value={text}
+            multiline
+            onChangeText={text => setText(text)}
+            style={{ width: "90%" }}
+          />
+          <Menu
+            visible={imageMenuVisible}
+            onDismiss={() => setImageMenuVisible(false)}
+            anchor={<IconButton onPress={() => setImageMenuVisible(true)} icon="camera" size={20} />}
+            style={{ alignItems: "center" }}
+          >
+            <Menu.Item title="Take picture" onPress={openCamera} />
+            <Menu.Item title="Select from library" onPress={pickImage} />
+          </Menu>
+        </View>
         <DropDown
           label={book?.label || "Book"}
           visible={bookMenuVisible}
