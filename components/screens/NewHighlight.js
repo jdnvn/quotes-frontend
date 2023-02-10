@@ -1,39 +1,53 @@
-import { useEffect, useState } from "react";
-import { TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View, Keyboard, ScrollView, KeyboardAvoidingView } from "react-native";
-import { Button, IconButton, Menu, TextInput } from "react-native-paper";
+import { useContext, useEffect, useState } from "react";
+import { View, Keyboard, ScrollView, KeyboardAvoidingView } from "react-native";
+import { Button, IconButton, Menu, Text, TextInput, withTheme } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import { myBooks } from "../../utils/api/books";
-import { newHighlight, readHighlightFromImage } from "../../utils/api/highlights";
+import { newHighlight, readHighlightFromImage, updateHighlight } from "../../utils/api/highlights";
 import * as ImagePicker from 'expo-image-picker';
-import MlkitOcr from 'react-native-mlkit-ocr';
 import * as FileSystem from 'expo-file-system';
+import { ListContext } from "../core/MainRouter";
 
-const NewHighlight = () => {
-  const [text, setText] = useState("");
-  const [page, setPage] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [bookMenuVisible, setBookMenuVisible] = useState(false);
+const NewHighlight = ({ route }) => {
+  const [text, setText] = useState(route?.params?.text || "");
+  const [book, setBook] = useState({ label: route?.params?.book?.title, value: route?.params?.book?.id } || {});
+  const [page, setPage] = useState(route?.params?.page);
+  const [location, setLocation] = useState(route?.params?.location);
+  const [bookDropdownVisible, setBookDropdownVisible] = useState(false);
   const [imageMenuVisible, setImageMenuVisible] = useState(false);
   const [books, setBooks] = useState([]);
-  const [book, setBook] = useState({});
   const [image, setImage] = useState(null);
+  const [editing, setEditing] = useState(route?.params?.edit);
+  const [creating, setCreating] = useState(route?.params?.new);
+
+  const { upsertHighlight } = useContext(ListContext);
 
   const createHighlight = async () => {
-    const params = {
-      text: text,
-      page: page,
-      location: location
-    };
+    const params = { text, page, location, book_id: book?.value };
 
     try {
       const response = await newHighlight(params);
+      setCreating(false);
+      upsertHighlight(response);
     } catch(error) {
       console.log(error);
     }
   };
 
-  const handleCloseBookMenu = () => {
-    setBookMenuVisible(false);
+  const editHighlight = async () => {
+    const params = { text, page, location, id: route?.params?.id, book_id: book?.value };
+
+    try {
+      const response = await updateHighlight({ params });
+      setEditing(false);
+      upsertHighlight(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCloseBookDropdown = () => {
+    setBookDropdownVisible(false);
   };
 
   const fetchBooks = async () => {
@@ -46,9 +60,9 @@ const NewHighlight = () => {
     }
   };
 
-  const handleOpenBookMenu = () => {
+  const handleOpenBookDropdown = () => {
     if (!books.length) fetchBooks();
-    setBookMenuVisible(true);
+    setBookDropdownVisible(true);
   };
 
   const handleSetBook = (id) => {
@@ -60,7 +74,6 @@ const NewHighlight = () => {
 
     try {
       const ocrResult = await readHighlightFromImage({ bytes: base64 });
-      console.log(ocrResult.text)
       setText(ocrResult.text);
     } catch (error) {
       console.log("could not read text from image");
@@ -74,8 +87,6 @@ const NewHighlight = () => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       const uri = result.assets[0].uri
@@ -94,8 +105,6 @@ const NewHighlight = () => {
 
     const result = await ImagePicker.launchCameraAsync();
 
-    console.log(result);
-
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setImage(uri);
@@ -104,53 +113,91 @@ const NewHighlight = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ padding: 15 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, height: "200%" }} style={{ padding: 15 }}>
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={64}>
-        <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-          <TextInput
-            label="Highlight"
-            value={text}
-            multiline
-            onChangeText={text => setText(text)}
-            style={{ width: "90%" }}
-          />
-          <Menu
-            visible={imageMenuVisible}
-            onDismiss={() => setImageMenuVisible(false)}
-            anchor={<IconButton onPress={() => setImageMenuVisible(true)} icon="camera" size={20} />}
-            style={{ alignItems: "center" }}
-          >
-            <Menu.Item title="Take picture" onPress={openCamera} />
-            <Menu.Item title="Select from library" onPress={pickImage} />
-          </Menu>
-        </View>
-        <DropDown
-          label={book?.label || "Book"}
-          visible={bookMenuVisible}
-          showDropDown={handleOpenBookMenu}
-          onDismiss={handleCloseBookMenu}
-          value={book}
-          setValue={handleSetBook}
-          list={books}
-        />
-        <TextInput
-          label="Page"
-          value={page}
-          onChangeText={page => setPage(page)}
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          label="Location"
-          value={location}
-          onChangeText={location => setLocation(location)}
-          keyboardType="phone-pad"
-        />
-        <Button onPress={createHighlight}>
-          Create
-        </Button>
+        {(creating || editing) ? (
+          <View style={{ display: "flex", flexDirection: "column", width: "100%", marginTop: 15 }}>
+            <View style={{ display: "flex", flexDirection: "row", width: "100%", alignItems: "center" }}>
+              <TextInput
+                label="Highlight"
+                value={text}
+                multiline
+                onChangeText={value => setText(value)}
+                style={{ width: "90%" }}
+              />
+              <Menu
+                visible={imageMenuVisible}
+                onDismiss={() => setImageMenuVisible(false)}
+                anchor={<IconButton onPress={() => setImageMenuVisible(true)} icon="camera" size={20} />}
+                style={{ alignItems: "center" }}
+              >
+                <Menu.Item title="Take picture" onPress={openCamera} />
+                <Menu.Item title="Select from library" onPress={pickImage} />
+              </Menu>
+            </View>
+            <View style={{ marginTop: 15 }}>
+              <DropDown
+                label={book?.label || "Book"}
+                visible={bookDropdownVisible}
+                showDropDown={handleOpenBookDropdown}
+                onDismiss={handleCloseBookDropdown}
+                value={book}
+                setValue={handleSetBook}
+                list={books}
+              />
+            </View>
+
+            <View style={{ marginTop: 15 }}>
+              <TextInput
+                label="Page"
+                value={page}
+                onChangeText={value => setPage(value)}
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            <View style={{ marginTop: 15 }}>
+              <TextInput
+                label="Location"
+                value={location}
+                onChangeText={value => setLocation(value)}
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              {editing ? (
+                <View style={{ display: "flex" }}>
+                  <Button onPress={() => setEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onPress={editHighlight}>
+                    Done
+                  </Button>
+                </View>
+              ) : (
+                <Button onPress={createHighlight}>
+                  Create
+                </Button>
+              )}
+            </View>
+          </View>
+        ) : (
+          <View style={{ padding: 15, marginBottom: 50 }}>
+            <Text variant="titleLarge">
+              {text}
+            </Text>
+            <Text>{" "}</Text>
+            <Text variant="titleMedium">{route?.params?.book?.title}</Text>
+            <Text variant="titleSmall">{route?.params?.book?.author}</Text>
+            <Button onPress={() => setEditing(true)}>
+              Edit
+            </Button>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </ScrollView>
   )
 };
 
-export default NewHighlight;
+export default withTheme(NewHighlight);

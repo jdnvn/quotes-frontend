@@ -27,6 +27,19 @@ export const newHighlight = (params) => {
   })
 };
 
+export const updateHighlight = (params) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .patch(`${baseUrl}/highlights/${params.id}`, params).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};
+
 export const deleteHighlight = (id) => {
   return new Promise((resolve, reject) => {
     axios

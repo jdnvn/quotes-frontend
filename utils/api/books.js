@@ -26,3 +26,29 @@ export const newBook = (params) => {
       });
   })
 };
+
+export const updateBook = (params) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .patch(`${baseUrl}/books/${params.id}`, params).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};
+
+export const deleteBook = (id) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(`${baseUrl}/books/${id}`).then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  })
+};

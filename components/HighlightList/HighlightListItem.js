@@ -1,67 +1,45 @@
-import { Button, Card, Text, useTheme } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import { deleteHighlight } from '../../utils/api/highlights';
 import { useNavigation } from '@react-navigation/native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { RectButton } from 'react-native-gesture-handler';
-import { Animated, View } from 'react-native';
+import { useContext } from 'react';
+import { ListContext } from '../core/MainRouter';
+import ListItem from '../shared/ListItem/ListItem';
 
-const HighlightListItem = (props) => {
-  const { id, text, page, location, highlightedAt, book } = props;
+const HighlightListItem = ({ getHighlights, ...props }) => {
   const navigation = useNavigation();
-  const theme = useTheme();
+  const { deleteHighlight: deleteHighlightFromList } = useContext(ListContext);
+
+  const { id, text, book } = props;
 
   const handleDeleteHighlight = async () => {
     try {
       await deleteHighlight(id);
+      deleteHighlightFromList(id);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const editAndDeleteActions = (progress, dragX) => (
-    <>
-    <RectButton
-      style={{
-        width: 50,
-        backgroundColor: 'tomato',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 10,
-      }}
-      onPress={handleDeleteHighlight}
-    >
-      <Animated.Text style={{ color: "white" }}>
-        Delete
-      </Animated.Text>
-    </RectButton>
-      <RectButton
-        style={{
-          width: 50,
-          backgroundColor: theme.colors.inversePrimary,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}
-        onPress={handleDeleteHighlight}
-      >
-        <Animated.Text style={{ color: "white" }}>
-          Edit
-        </Animated.Text>
-      </RectButton>
-    </>
-  );
+  const handleEditHighlight = () => {
+    const routeParams = { edit: true, ...props };
+    navigation.navigate("New Highlight", routeParams);
+  };
 
+  const handleViewHighlight = () => {
+    const routeParams = { view: true, ...props };
+    navigation.navigate("New Highlight", routeParams);
+  };
 
   return (
-    <Swipeable renderRightActions={editAndDeleteActions}>
+    <ListItem handleDelete={handleDeleteHighlight} handleEdit={handleEditHighlight}>
       <Card
-        onPress={() => navigation.navigate("Highlight", props)}
+        onPress={handleViewHighlight}
         style={{ padding: 10, marginTop: 2 }}
       >
         <Card.Title title={text} subtitle={book?.title} />
       </Card>
-    </Swipeable>
-  )
+    </ListItem>
+  );
 };
 
 export default HighlightListItem;

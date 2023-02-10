@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView } from "react-native";
 import { myBooks } from '../../utils/api/books';
+import { ListContext } from '../core/MainRouter';
 import BookListItem from './BookListItem';
 
-const BookList = ({ books, setBooks }) => {
+const BookList = () => {
   const [refreshing, setRefreshing] = useState(false);
+  const { books, setBooks } = useContext(ListContext);
 
   useEffect(() => {
     if (!books.length) getMyBooks();
@@ -33,9 +35,13 @@ const BookList = ({ books, setBooks }) => {
         />
       }
     >
-      {books.map((book) => (
-        <BookListItem key={book.id} {...book} />
-      ))}
+      {books ? (
+        books.map((book) => (
+          <BookListItem key={book.id} {...book} />
+        ))
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </ScrollView>
   );
 };

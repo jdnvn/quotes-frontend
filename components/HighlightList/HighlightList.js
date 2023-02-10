@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { myHighlights } from "../../utils/api/highlights";
 import HighlightListItem from "./HighlightListItem";
 import { RefreshControl, ScrollView } from "react-native";
+import { ListContext } from '../core/MainRouter';
 
-const HighlightList = ({ highlights, setHighlights }) => {
+const HighlightList = ({ route }) => {
   const [refreshing, setRefreshing] = useState(false);
+  const { highlights, setHighlights } = useContext(ListContext);
 
   useEffect(() => {
-    if (!highlights.length) getMyHighlights();
+    if (!highlights.length) getHighlights();
   }, []);
 
-  const getMyHighlights = async () => {
+  const getHighlights = async () => {
     setRefreshing(true);
     try {
       const response = await myHighlights();
@@ -26,16 +28,18 @@ const HighlightList = ({ highlights, setHighlights }) => {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={getMyHighlights}
+          onRefresh={getHighlights}
           tintColor={"slateblue"}
           title={"getting yo quotes..."}
           titleColor={"mediumpurple"}
         />
       }
     >
-      {highlights.map((highlight) => (
-        <HighlightListItem key={highlight.id} {...highlight} />
-      ))}
+      {highlights && (
+        highlights.map((highlight) => (
+          <HighlightListItem key={highlight.id} getHighlights={getHighlights} {...highlight} />
+        ))
+      )}
     </ScrollView>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, createContext } from 'react';
 import { View } from 'react-native';
 import HighlightList from '../HighlightList/HighlightList';
 import * as Notifications from 'expo-notifications';
@@ -16,25 +16,24 @@ const segmentedButtons = [
   },
 ];
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
   const [selected, setSelected] = useState("highlight");
-  const [highlights, setHighlights] = useState([]);
-  const [books, setBooks] = useState([]);
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const floatingButtonActions = [
     {
       icon: "book",
       label: "Book",
-      onPress: () => navigation.navigate("New Book"),
+      onPress: () => navigation.navigate("New Book", { new: true }),
     },
     {
       icon: "marker",
       label: "Highlight",
-      onPress: () => navigation.navigate("New Highlight"),
+      onPress: () => navigation.navigate("New Highlight", { new: true }),
     },
   ];
 
@@ -61,11 +60,13 @@ const Home = ({ navigation }) => {
         buttons={segmentedButtons}
         style={{ marginVertical: 10 }}
       />
+
       {selected === "highlight" ? (
-        <HighlightList highlights={highlights} setHighlights={setHighlights} />
+        <HighlightList />
       ) : (
-        <BookList books={books} setBooks={setBooks} />
+        <BookList />
       )}
+
       <FAB.Group
         open={menuOpen}
         visible
