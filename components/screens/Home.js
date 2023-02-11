@@ -28,12 +28,12 @@ const Home = ({ navigation, route }) => {
     {
       icon: "book",
       label: "Book",
-      onPress: () => navigation.navigate("New Book", { new: true }),
+      onPress: () => navigation.navigate("Book", { new: true }),
     },
     {
       icon: "marker",
       label: "Highlight",
-      onPress: () => navigation.navigate("New Highlight", { new: true }),
+      onPress: () => navigation.navigate("Highlight", { new: true }),
     },
   ];
 
@@ -43,7 +43,7 @@ const Home = ({ navigation, route }) => {
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      navigation.navigate('Highlight', response.notification.request.content.data)
+      navigation.navigate("Highlight", response.notification.request.content.data)
     });
 
     return () => {
@@ -53,7 +53,7 @@ const Home = ({ navigation, route }) => {
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", marginBottom: 30 }}>
       <SegmentedButtons
         value={selected}
         onValueChange={setSelected}

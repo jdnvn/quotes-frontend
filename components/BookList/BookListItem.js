@@ -21,13 +21,13 @@ const BookListItem = (props) => {
 
   const handleEditBook = () => {
     const routeParams = { edit: true, ...props };
-    navigation.navigate("New Book", routeParams);
+    navigation.navigate("Book", routeParams);
   };
 
   return (
     <ListItem handleDelete={handleDeleteBook} handleEdit={handleEditBook}>
       <Card
-        onPress={() => navigation.navigate("New Book", props)}
+        onPress={() => navigation.navigate("Book", props)}
         style={{ padding: 10, marginTop: 2 }}
       >
         <Card.Title title={title} subtitle={author} />

@@ -1,11 +1,9 @@
 import Home from "../screens/Home";
-import NewHighlight from "../screens/NewHighlight";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme, IconButton } from "react-native-paper";
 import Highlight from "../screens/Highlight";
 import { MaterialIcons } from '@expo/vector-icons';
-import NewBook from "../screens/NewBook";
 import Book from "../screens/Book";
 import { createContext, useState } from "react";
 
@@ -61,9 +59,7 @@ const MainRouter = () => {
               headerTitle: () => <MaterialIcons name="highlight" size={30} color="white" />
             }}
           />
-          <Stack.Screen name="New Highlight" component={NewHighlight} />
           <Stack.Screen name="Highlight" component={Highlight} />
-          <Stack.Screen name="New Book" component={NewBook} />
           <Stack.Screen name="Book" component={Book} />
         </Stack.Navigator>
       </NavigationContainer>

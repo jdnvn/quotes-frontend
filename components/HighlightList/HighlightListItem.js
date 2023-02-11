@@ -22,12 +22,12 @@ const HighlightListItem = ({ getHighlights, ...props }) => {
 
   const handleEditHighlight = () => {
     const routeParams = { edit: true, ...props };
-    navigation.navigate("New Highlight", routeParams);
+    navigation.navigate("Highlight", routeParams);
   };
 
   const handleViewHighlight = () => {
     const routeParams = { view: true, ...props };
-    navigation.navigate("New Highlight", routeParams);
+    navigation.navigate("Highlight", routeParams);
   };
 
   return (
